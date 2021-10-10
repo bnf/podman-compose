@@ -1479,7 +1479,7 @@ def compose_run(compose, args):
         podman_args.insert(1, '-i')
         if args.rm:
             podman_args.insert(1, '--rm')
-    compose.podman.run([], 'run', podman_args, sleep=0)
+    compose.podman.run([], 'run', podman_args, sleep=0, obj=compose)
 
 @cmd_run(podman_compose, 'exec', 'execute a command in a running container')
 def compose_exec(compose, args):
@@ -1698,8 +1698,11 @@ def compose_build_parse(parser):
     parser.add_argument("--no-cache",
                         help="Do not use cache when building the image.", action='store_true')
 
-def main():
+def main() -> int:
     podman_compose.run()
+    if podman_compose.exit_code is not None:
+        return podman_compose.exit_code
+    return 0
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
